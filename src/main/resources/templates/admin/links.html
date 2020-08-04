@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>友情链接</title>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap-maizi.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/content-style.css}"/>
+</head>
+<body>
+<!-- 导航 调用模块-->
+<div th:replace="~{admin/commons::head(active='links')}"></div>
+<!-- 主体 -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align: center">
+                    <button onclick="add()" type="button" style="width: 100px" class="btn btn-warning btn-sm">添加</button>
+                </div>
+                <table class="table table-hover" style="text-align: center">
+                    <tr>
+                        <th>链接id</th>
+                        <th>网站名</th>
+                        <th>网站地址</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr th:each="link:${list}">
+                        <td th:text="${link.lid}"></td>
+                        <td th:text="${link.lname}"></td>
+                        <td th:text="${link.lurl}"></td>
+                        <td>
+                            <button th:onclick="update([[${link.lid}]],[[${link.lname}]],[[${link.lurl}]])" type="button" class="btn btn-sm btn-info">修改</button>
+                            <button th:onclick="deleteLinks([[${link.lid}]],[[${link.lname}]])" type="button" class="btn btn-sm btn-danger">删除</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体 -->
+
+
+<!--删除模态框-->
+<div>
+    <div class="modal fade" id="deleteModel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">是否删除友链</h4>
+                </div>
+                <!-- 模态框主体 -->
+                <div class="modal-body" id="title">
+                </div>
+                <!-- 模态框底部 -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <a id="strikeOut" type="button" class="btn btn-danger">确定</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--添加/修改模态框-->
+<div>
+    <div class="modal fade" id="addOrUpdateModel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <form id="form" method="post">
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="titleName"></h4>
+                        <input type="hidden" id="lid" name="lid" value="0">
+                    </div>
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        <table>
+                            <div class="form-group">
+                                <label for="lname">网站名</label>
+                                <input type="text" class="form-control" id="lname" name="lname" placeholder="网站名">
+                            </div>
+                            <div class="form-group">
+                                <label for="lurl">网站地址</label>
+                                <input type="text" class="form-control" id="lurl" name="lurl" placeholder="网站地址">
+                            </div>
+                        </table>
+                    </div>
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--页脚-->
+<div th:replace="~{admin/commons::footer}"></div>
+
+</body>
+<script th:src="@{/adminStatic/js/jquery.js}"></script>
+<script th:src="@{/adminStatic/js/bootstrap.min.js}"></script>
+<script>
+    function deleteLinks(id,name) {
+        $("#title").html(name);
+        $("#strikeOut").attr("href","/admin/links/deleteLinks/"+id);
+        //调用模态框
+        $("#deleteModel").modal({backdrop: 'static', keyboard: false});
+    }
+    
+    function add() {
+        $("#titleName").text("添加链接");
+        $("#form").attr("action","/admin/links/addLinks")
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function update(lid,lname,lurl) {
+        $("#titleName").text("修改链接");
+        $("#lid").val(lid);
+        $("#lname").val(lname);
+        $("#lurl").val(lurl);
+        $("#form").attr("action","/admin/links/updateLinks")
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+</script>
+</html>

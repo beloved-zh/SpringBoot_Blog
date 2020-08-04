@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zh.mapper.ArticleMapper">
+
+    <resultMap id="ArticleMap" type="Article">
+        <result property="aid" column="aid"/>
+        <result property="title" column="title"/>
+        <result property="text" column="text"/>
+        <result property="newstime" column="newstime"/>
+        <result property="modifytime" column="modifytime"/>
+        <result property="state" column="state"/>
+        <result property="tags" column="tags"/>
+        <result property="pageviews" column="pageviews"/>
+        <association property="userBase" javaType="UserBase">
+            <result property="uid" column="uid"/>
+            <result property="userName" column="userName"/>
+        </association>
+        <association property="classify" javaType="Classify">
+            <result property="cid" column="cid"/>
+            <result property="cname" column="cname"/>
+        </association>
+    </resultMap>
+
+    <insert id="addArticle" parameterType="Article">
+        insert into blog.article (title, text, newstime, modifytime, state, uid, cid, tags)
+        values (#{title}, #{text}, NOW(), NOW(), #{state}, #{userBase.uid}, #{classify.cid}, #{tags});
+    </insert>
+
+    <select id="findByState" parameterType="int" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and a.state = #{state}
+        order by a.aid desc
+    </select>
+
+    <delete id="deleteArticle" parameterType="int">
+        delete from blog.article where aid = #{aid}
+    </delete>
+
+    <select id="fuzzyQuery" parameterType="String" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid
+        and (
+            (a.title like upper(#{name})) or
+            (a.title like lower(#{name})) or
+            (a.tags like upper(#{name})) or
+            (a.tags like lower(#{name}))
+            )
+        order by a.aid desc
+    </select>
+
+    <select id="findById" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and aid = #{aid}
+    </select>
+
+    <select id="findByIdAndState" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and state = 1 and aid = #{aid}
+    </select>
+
+    <update id="updateArticle" parameterType="Article">
+        update blog.article set title = #{title}, text = #{text},
+        modifytime = NOW(), state = #{state}, uid = #{userBase.uid},
+        cid = #{classify.cid}, tags = #{tags}
+        where aid = #{aid}
+    </update>
+
+    <select id="findAllByState" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and state = 1
+        order by a.aid desc
+    </select>
+
+    <select id="findByClassify" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and state = 1
+        and c.cid = #{cid}
+        order by a.aid desc
+    </select>
+
+    <select id="findByTag" parameterType="String" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and state = 1
+        and a.tags like #{tag}
+        order by a.aid desc
+    </select>
+
+    <update id="updatePageviews">
+        update blog.article set pageviews = pageviews + 1
+        where aid = #{aid}
+    </update>
+
+    <select id="search" parameterType="String" resultMap="ArticleMap">
+        select a.*,u.userName,c.cname
+        from blog.article a,blog.userbase u,blog.classify c
+        where a.uid = u.uid and a.cid = c.cid and a.state = 1
+        and (
+            (a.title like upper(#{name})) or
+            (a.title like lower(#{name})) or
+            (a.tags like upper(#{name})) or
+            (a.tags like lower(#{name}))
+            )
+        order by a.aid desc
+    </select>
+
+    <select id="popular" resultType="Article">
+        select *
+        from article
+        where state = 1
+        order by pageviews desc
+        limit 10
+    </select>
+</mapper>

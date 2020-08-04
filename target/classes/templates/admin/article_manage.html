@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文章管理</title>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap-maizi.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/content-style.css}"/>
+<body>
+<!-- 导航 调用模块-->
+<div th:replace="~{admin/commons::head(active='article_manage')}"></div>
+
+<!--主体-->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body col-md-9" style="padding: 15px 0;">
+                <ul class="nav nav-tabs" id="statusBar">
+                    <li class="active" id="Published"><a th:href="@{/admin/article/gotoArticleManage}">已发布</a></li>
+                    <li id="draftBox"><a onclick="draftBox()">草稿箱</a></li>
+                </ul>
+            </div>
+            <div class="panel-body col-md-3">
+                <div class="input-group">
+                    <input class="form-control" type="text" value="" placeholder="根据标签搜索" id="tag">
+                    <span class="input-group-btn">
+                        <button onclick="fuzzyQuery()" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="tab">
+                        <thead>
+                            <tr>
+                                <th class="w15p">文章标题</th>
+                                <th class="w5p">类型</th>
+                                <th class="w15p">标签</th>
+                                <th class="w10p">发布时间</th>
+                                <th class="w5p">浏览量</th>
+                                <th class="w5p">作者</th>
+                                <th class="w10p">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                    <!--分页控件-->
+                    <ul id="paginator"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--页脚-->
+<div th:replace="~{admin/commons::footer}"></div>
+
+<!--提示信息模态框 。放在最后解决多级模态框优先级冲突问题-->
+<div>
+    <!-- 模态框 -->
+    <div class="modal fade" id="deleteModel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">是否删除文章</h4>
+                </div>
+                <!-- 模态框主体 -->
+                <div class="modal-body" id="title">
+                </div>
+                <!-- 模态框底部 -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button id="strikeOut" type="button" class="btn btn-danger">确定</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script th:src="@{/adminStatic/js/jquery-3.4.1.js}"></script>
+<script th:src="@{/adminStatic/js/bootstrap.min.js}"></script>
+<script th:src="@{/adminStatic/js/plugins/pagination/bootstrap-paginator.js}"></script>
+<script type="text/javascript">
+
+    $.get(
+        "/admin/article/gotoArticleManage/1/1",
+        function (data) {
+            dataRendering(data.info.list);
+            initPagination(data.info.pageNum,data.info.pages,data.state);
+        },
+        "json"
+    );
+
+  /**
+   * 数据渲染
+   */
+   function dataRendering(data){
+        $("#tab tbody").empty();
+        $.each(data,function (i,a) {
+            $("#tab tbody").append(
+                '<tr>' +
+                '<td class="center">'+a.title+'</td>'+
+                '<td class="center">'+a.classify.cname+'</td>'+
+                '<td class="center">'+a.tags+'</td>'+
+                '<td class="center">'+a.newstime+'</td>'+
+                '<td class="center">'+a.pageviews+'</td>'+
+                '<td class="center">'+a.userBase.userName+'</td>'+
+                '<td class="center">' +
+                '    <a target="view_window" href="/admin/article/lookArticle/'+a.aid+'"><i class="glyphicon glyphicon-eye-open"></i> 查看</a>' +
+                '    <a href="/admin/article/updateArticle/'+a.aid+'"><i class="glyphicon glyphicon-pencil"></i> 修改</a>' +
+                '    <a onclick="deleteModel(\''+a.title+'\','+a.aid+')"><i class="glyphicon glyphicon-remove"></i> 删除</a>' +
+                '</td>'+
+                '</tr>'
+            );
+        });
+    }
+
+
+    /**
+     * 初始化分页控件
+     */
+    function initPagination(pageNum,pages,state){
+        $('#paginator').bootstrapPaginator({
+
+            bootstrapMajorVersion: 3,//bootstrap版本
+
+            alignment:"center",//设置控件的对齐方式
+
+            currentPage: pageNum,//当前页码
+
+            numberOfPages: 10,//设置显示的页码数
+
+            totalPages: pages,//总页数（后台传过来的数据）
+
+
+            itemTexts: function (type, page, current) {
+
+                switch (type) {
+
+                    case "first": return "首页";
+
+                    case "prev": return "上一页";
+
+                    case "next": return "下一页";
+
+                    case "last": return "末页";
+
+                    case "page": return page;
+
+                }
+
+            },//改写分页按钮字样
+            onPageClicked: function (event, originalEvent, type, page) {
+
+                $.get(
+                    "/admin/article/gotoArticleManage/"+state+"/"+page,
+                    function (data) {
+                        dataRendering(data.info.list);
+                    },
+                    "json"
+                );
+            }
+
+        });
+    }
+
+    /**
+     * 初始化模糊查询分页控件
+     */
+    function initFuzzyQueryPagination(pageNum,pages,tag){
+        $('#paginator').bootstrapPaginator({
+
+            bootstrapMajorVersion: 3,//bootstrap版本
+
+            alignment:"center",//设置控件的对齐方式
+
+            currentPage: pageNum,//当前页码
+
+            numberOfPages: 10,//设置显示的页码数
+
+            totalPages: pages,//总页数（后台传过来的数据）
+
+
+            itemTexts: function (type, page, current) {
+
+                switch (type) {
+
+                    case "first": return "首页";
+
+                    case "prev": return "上一页";
+
+                    case "next": return "下一页";
+
+                    case "last": return "末页";
+
+                    case "page": return page;
+
+                }
+
+            },//改写分页按钮字样
+            onPageClicked: function (event, originalEvent, type, page) {
+
+                $.post(
+                    "/admin/article/fuzzyQuery",
+                    {
+                        "pageNum":page,
+                        "tag":tag
+                    },
+                    function (data) {
+                        dataRendering(data.list);
+                    },
+                    "json"
+                );
+            }
+
+        });
+    }
+
+    /**
+     * 草稿箱
+     */
+    function draftBox() {
+        $("#Published").removeClass("active");
+        $("#draftBox").addClass("active");
+        $.get(
+            "/admin/article/gotoArticleManage/0/1",
+            function (data) {
+                dataRendering(data.info.list);
+                initPagination(data.info.pageNum,data.info.pages,data.state);
+            },
+            "json"
+        );
+    }
+
+    /**
+     * 删除模态框
+     */
+    function deleteModel(title,aid){
+        $("#title").html(title);
+        /*
+         * 使用one添加点击事件
+         * one当处理函数触发一次后，立即被删除
+         */
+        $("#strikeOut").one("click",function(){
+            $.post(
+                "/admin/article/deleteArticle",
+                {
+                    "aid":aid
+                },
+                function (data) {
+                    if (data == true){
+                        window.location.href = "/admin/article/gotoArticleManage";
+                    } else {
+                        alert("删除失败！");
+                    }
+                },
+                "json"
+            );
+        });
+        //调用模态框
+        $("#deleteModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    /**
+     * 模糊查询
+     */
+    function fuzzyQuery() {
+        $("#statusBar").remove();
+        var tag = $("#tag").val();
+        $.post(
+            "/admin/article/fuzzyQuery",
+            {
+                "pageNum":1,
+                "tag":tag
+            },
+            function (data) {
+                if (data.total == 0){
+                    alert("无内容");
+                    return false;
+                }
+                dataRendering(data.list);
+                initFuzzyQueryPagination(data.pageNum,data.pages,tag);
+            },
+            "json"
+        );
+    }
+</script>
+<script type="text/javascript">
+</script>
+</html>

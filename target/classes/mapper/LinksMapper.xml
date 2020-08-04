@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zh.mapper.LinksMapper">
+
+    <select id="findAll" resultType="Links">
+        select * from blog.links;
+    </select>
+
+    <delete id="deleteLinks">
+        delete from blog.links
+        where lid = #{lid}
+    </delete>
+
+    <insert id="addLinks" parameterType="Links">
+        insert into blog.links (lname, lurl) values (#{lname},#{lurl});
+    </insert>
+
+    <update id="updateLinks" parameterType="Links">
+        update blog.links set lname = #{lname},lurl = #{lurl}
+        where lid = #{lid}
+    </update>
+</mapper>

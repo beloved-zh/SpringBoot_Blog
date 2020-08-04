@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分类标签</title>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap-maizi.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/content-style.css}"/>
+</head>
+<body>
+<!-- 导航 调用模块-->
+<div th:replace="~{admin/commons::head(active='category_label')}"></div>
+
+<!-- 主体 -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" style="text-align: center">
+                                <button onclick="addClassify()" type="button" style="width: 100px" class="btn btn-warning btn-sm">添加分类</button>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-hover" style="text-align: center">
+                                    <tr>
+                                        <th>id</th>
+                                        <th>类别名</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    <tr th:each="c:${cList}">
+                                        <td th:text="${c.cid}"></td>
+                                        <td th:text="${c.cname}"></td>
+                                        <td>
+                                            <button th:onclick="updateClassify([[${c.cid}]],[[${c.cname}]])" type="button" class="btn btn-sm btn-info">修改</button>
+                                            <button th:onclick="deleteClassify([[${c.cid}]],[[${c.cname}]])" type="button" class="btn btn-sm btn-danger">删除</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" style="text-align: center">
+                                <button onclick="addTag()" type="button" style="width: 100px" class="btn btn-warning btn-sm">添加标签</button>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-hover" style="text-align: center">
+                                    <tr>
+                                        <th>id</th>
+                                        <th>标签名</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    <tr th:each="t:${tList}">
+                                        <td th:text="${t.tid}"></td>
+                                        <td th:text="${t.tname}"></td>
+                                        <td>
+                                            <button th:onclick="updateTag([[${t.tid}]],[[${t.tname}]])" type="button" class="btn btn-sm btn-info">修改</button>
+                                            <button th:onclick="deleteTag([[${t.tid}]],[[${t.tname}]])" type="button" class="btn btn-sm btn-danger">删除</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体 -->
+
+<!--添加修改模态框-->
+<div>
+    <div class="modal fade" id="addOrUpdateModel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <form id="form" method="post">
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="titleName"></h4>
+                        <input type="hidden" id="id" value="0">
+                    </div>
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        <table>
+                            <div class="form-group">
+                                <label for="name" id="label"></label>
+                                <input type="text" class="form-control" id="name">
+                            </div>
+                        </table>
+                    </div>
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--删除模态框-->
+<div>
+    <div class="modal fade" id="deleteModel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="prompt"></h4>
+                </div>
+                <!-- 模态框主体 -->
+                <div class="modal-body" id="title">
+                </div>
+                <!-- 模态框底部 -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <a id="strikeOut" type="button" class="btn btn-danger">确定</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--页脚-->
+<div th:replace="~{admin/commons::footer}"></div>
+
+</body>
+<script th:src="@{/adminStatic/js/jquery.js}"></script>
+<script th:src="@{/adminStatic/js/bootstrap.min.js}"></script>
+<script>
+    function addClassify() {
+        $("#titleName").text("添加分类");
+        $("#label").text("分类名");
+        $("#name").attr("name","cname");
+        $("#name").attr("placeholder","分类名");
+        $("#form").attr("action","/admin/classify/add");
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function updateClassify(cid,cname) {
+        $("#id").val(cid);
+        $("#id").attr("name","cid");
+        $("#titleName").text("修改分类名");
+        $("#label").text("分类名");
+        $("#name").val(cname);
+        $("#name").attr("name","cname");
+        $("#name").attr("placeholder","分类名");
+        $("#form").attr("action","/admin/classify/update");
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function deleteClassify(cid,cname) {
+        $("#prompt").text("是否删除分类");
+        $("#title").text(cname);
+        $("#strikeOut").attr("href","/admin/classify/delete/"+cid);
+        //调用模态框
+        $("#deleteModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function addTag() {
+        $("#titleName").text("添加标签");
+        $("#label").text("标签名");
+        $("#name").attr("name","tname");
+        $("#name").attr("placeholder","标签名");
+        $("#form").attr("action","/admin/tag/add");
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function updateTag(tid,tname) {
+        $("#id").val(tid);
+        $("#id").attr("name","tid");
+        $("#titleName").text("修改标签名");
+        $("#label").text("标签名");
+        $("#name").val(tname);
+        $("#name").attr("name","tname");
+        $("#name").attr("placeholder","标签名");
+        $("#form").attr("action","/admin/tag/update");
+        //调用模态框
+        $("#addOrUpdateModel").modal({backdrop: 'static', keyboard: false});
+    }
+
+    function deleteTag(tid,tname) {
+        $("#prompt").text("是否删除分类");
+        $("#title").text(tname);
+        $("#strikeOut").attr("href","/admin/tag/delete/"+tid);
+        //调用模态框
+        $("#deleteModel").modal({backdrop: 'static', keyboard: false});
+    }
+</script>
+</html>

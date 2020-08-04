@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+    <meta charset="UTF-8">
+    <title>文章详情</title>
+    <!-- libs css-->
+    <link rel="stylesheet" th:href="@{/reception/css/tool.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/style.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/media.css}">
+    <link rel="stylesheet" th:href="@{/editormd/css/editormd.preview.css}" />
+</head>
+<body>
+
+<!-- 导航 调用模块-->
+<div th:replace="~{reception/commons::head(data='article')}"></div>
+
+<t></t>
+<!-- 内容 -->
+<div class="content container">
+    <!-- 二级 -->
+    <div class="love2">
+        <div class="left">
+            <!-- 文章主体 -->
+            <div class="contents">
+                <div class="title" th:text="${article.title}">文章标题</div>
+                <div class="title_t">
+                    <i class="iconfont">&#xe8cb;</i>
+                    <span th:text="${article.classify.cname}"></span>&emsp;
+                    <i class="iconfont">&#xe8fa;</i>
+                    <span th:text="${#dates.format(article.modifytime,'yyyy-MM-dd HH:mm:ss')}"></span>&emsp;
+                    <i class="iconfont">&#xe652;</i>
+                    <span th:text="${article.userBase.userName}"></span>&emsp;
+                    <i class="iconfont">&#xe8ea;</i>
+                    <span>10</span>&emsp;
+                    <i class="iconfont">&#xe7b3;</i>
+                    <span th:text="${article.pageviews}"></span>
+                </div>
+                <div class="ner" id="text">
+                    <textarea th:text="${article.text}" style="display:none;"></textarea>
+                </div>
+
+                <div class="label">转载请注明出处！--- 巴学园</div>
+            </div>
+            <!-- 文章评论 -->
+            <div class="leaving ">
+                <!-- 留言展示 -->
+                <!--<div class="leaving-show">
+                    <p class="comment-header"><b>评论：</b></p>
+                    <h3>暂无评论！</h3>
+                    <div class="comment" id="comment-1">
+                        <a name="1"></a>
+                        <div class="avatar">
+                        </div>
+                        <div class="comment-info">
+                            <b><a href="http://em.1zyan.cn/" target="_blank">测试1</a> </b><br><span class="comment-time">5 分钟前</span>
+                            <div class="comment-content">内容呀，不知道呀</div>
+                            <div class="comment-reply"><a href="#comment-1" onclick="commentReply(1,this)">回复</a></div>
+                        </div>
+                        <div class="comment comment-children" id="comment-2">
+                            <a name="2"></a>
+                            <div class="avatar">
+                            </div>
+                            <div class="comment-info">
+                                <b>
+                                    <a href="http://em.1zyan.cn/" target="_blank">yizhiyan</a>
+                                </b><br>
+                                <span class="comment-time">5 分钟前</span>
+                                <div class="comment-content">@测试1：可以的，啊哈啊哈</div>
+                                <div class="comment-reply">
+                                    <a href="#comment-2" onclick="commentReply(2,this)">回复</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <!-- 留言 -->
+                <div class="leaving-show" style="text-align: center">
+                    <p class="comment-header"><b>如有建议，请下方QQ联系站长</b></p>
+                    <div class="">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 侧边 调用模块-->
+        <div th:replace="~{reception/commons::side}"></div>
+    </div>
+</div>
+
+
+<!-- 页脚 调用模块-->
+<div th:replace="~{reception/commons::footer}"></div>
+<!-- 回顶 调用模块-->
+<div th:replace="~{reception/commons::gotoTop}"></div>
+
+</body>
+<script th:src="@{/reception/js/jquery-3.4.1.js}"></script>
+<script th:src="@{/editormd/lib/marked.min.js}"></script>
+<script th:src="@{/editormd/lib/prettify.min.js}"></script>
+<script th:src="@{/editormd/lib/raphael.min.js}"></script>
+<script th:src="@{/editormd/lib/underscore.min.js}"></script>
+<script th:src="@{/editormd/lib/sequence-diagram.min.js}"></script>
+<script th:src="@{/editormd/lib/flowchart.min.js}"></script>
+<script th:src="@{/editormd/lib/jquery.flowchart.min.js}"></script>
+<script th:src="@{/editormd/editormd.js}"></script>
+<script th:src="@{/reception/js/style.js}"></script>
+<script th:src="@{/reception/js/base.js}"></script>
+
+<script>
+    let testEditor;
+    $(function () {
+        testEditor = editormd.markdownToHTML("text", {//注意：这里是上面DIV的id
+            htmlDecode: "style,script,iframe",
+            emoji: true,
+            taskList: true,
+            tocm: true,
+            tex: true, // 默认不解析
+            flowChart: true, // 默认不解析
+            sequenceDiagram: true, // 默认不解析
+            codeFold: true
+        });
+    });
+</script>
+</html>

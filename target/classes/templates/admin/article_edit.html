@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发布文章</title>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap-maizi.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/content-style.css}"/>
+    <!--editormd-->
+    <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
+</head>
+<body>
+<!-- 导航 调用模块-->
+<div th:replace="~{admin/commons::head(active='article_edit')}"></div>
+
+<!-- 主体 -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                <!--添加文章-->
+                <input type="text" th:if="${article == null}" class="form-control" id="title" placeholder="请输入文章标题（必选）">
+                <!--文章回显-->
+                <input type="text" th:if="${article != null}" th:value="${article.title}" class="form-control" id="title" placeholder="请输入文章标题（必选）">
+            </div>
+            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                <select class="form-control" id="cid" th:if="${article == null}">
+                    <option th:each="c:${cList}" th:value="${c.cid}" th:text="${c.cname}"></option>
+                </select>
+                <select class="form-control" id="cid" th:if="${article != null}">
+                    <option th:selected="${article.classify.cid == c.cid?true:false}" th:each="c:${cList}" th:value="${c.cid}" th:text="${c.cname}"></option>
+                </select>
+            </div>
+            <div class="form-group col-md-12" style="padding: 0 10px 0 0;">
+                <!--发布文章-->
+                <label class="checkbox-inline" th:if="${article == null}" th:each="t:${tList}">
+                    <input type="checkbox" name="tag" th:value="${t.tname}" th:text="${t.tname}">
+                </label>
+                <!--文章回显
+                strings.contains判断某个值是否存在一个字符串中，不区分大小写
+                -->
+                <label class="checkbox-inline" th:if="${article != null}" th:each="t:${tList}">
+                    <input type="checkbox" name="tag"
+                           th:checked="${#strings.contains(article.tags,t.tname)?true:false}"
+                           th:value="${t.tname}" th:text="${t.tname}">
+                </label>
+            </div>
+            <!--正文-->
+            <div class="form-group col-md-12" id="article-content">
+                <textarea th:if="${article == null}" class="editormd-markdown-textarea" name="content" id="content" style="display:none;"></textarea>
+                <textarea th:if="${article != null}" th:text="${article.text}" class="editormd-markdown-textarea" name="content" id="content" style="display:none;"></textarea>
+                <!-- 第二个隐藏文本域，用来构造生成的HTML代码，方便表单POST提交，这里的name可以任意取，后台接受时以这个name键为准 -->
+                <!--<textarea class="editormd-html-textarea" name="html"></textarea>-->
+            </div>
+            <div th:if="${article == null}" class="form-group col-md-12">
+                <div class="form-group col-md-6" style="padding: 0 10px 0 0;text-align: center">
+                    <button onclick="submit('1')" type="button" class="btn btn-info">发布文章</button>
+                </div>
+                <div class="form-group col-md-6" style="padding: 0 10px 0 0;text-align: center">
+                    <button onclick="submit('0')" type="button" class="btn btn-warning">存为草稿</button>
+                </div>
+            </div>
+            <div th:if="${article != null}" class="form-group col-md-12">
+                <input type="hidden" id="aid" th:value="${article.aid}">
+                <div class="form-group col-md-6" style="padding: 0 10px 0 0;text-align: center">
+                    <button onclick="update('1')" type="button" class="btn btn-info">发布文章</button>
+                </div>
+                <div class="form-group col-md-6" style="padding: 0 10px 0 0;text-align: center">
+                    <button onclick="update('0')" type="button" class="btn btn-warning">存为草稿</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体 -->
+
+
+<!--页脚-->
+<div th:replace="~{admin/commons::footer}"></div>
+</body>
+<script th:src="@{/adminStatic/js/jquery.js}"></script>
+<script th:src="@{/adminStatic/js/bootstrap.min.js}"></script>
+<script th:src="@{/editormd/editormd.js}"></script>
+
+<script>
+    var testEditor;
+
+    $(function () {
+        testEditor = editormd("article-content",{//注意：这里的属性是textarea外div的id值
+            placeholder:'请编写文章内容',
+            width   : "100%",
+            height  : 400,
+            syncScrolling : "single",
+            path : "/editormd/lib/",    // 原资源文件中lib包在我们项目中所放的位置
+            saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+            emoji: true,                  // 开启emoji
+            tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+            flowChart : true,             // 开启流程图支持，默认关闭
+            sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+            //图片上传
+            imageUpload : true,
+            imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "/admin/article/uploadImage",
+            onload : function(obj) {
+                /**
+                 *  返回json格式内容
+                 *  {
+                 *      success : 0 | 1, //0表示上传失败;1表示上传成功
+                 *      message : "提示的信息",
+                 *      url     : "图片地址" //上传成功时才返回
+                 *   }
+                 */
+                console.log(obj);
+            },
+        });
+    });
+
+    function submit(state) {
+        var title = $("#title").val();
+        var cid = $("#cid").val();
+        var tags = [];
+        $('input[name="tag"]:checked').each(function(){
+            tags.push($(this).val());//向数组中添加元素
+        });
+        var text = testEditor.getMarkdown();
+
+        if (title == ""){
+            alert("标题不能为空！");
+            return false;
+        }
+        if (text == ""){
+            alert("文章不能为空！");
+            return false;
+        }
+
+        $.post(
+            "/admin/article/addArticle",
+            {
+                "title":title,
+                "text" :text,
+                "state":state,
+                "classify.cid"  :cid,
+                "tags" :tags.toString()
+            },
+            function (data) {
+                if (data == true){
+                   window.location.href = "/admin/article/gotoArticleManage";
+                } else if (data == false){
+                    alert("操作失败");
+                }
+            },
+            "json"
+        );
+    }
+
+
+    function update(state) {
+        var aid = $("#aid").val();
+        var title = $("#title").val();
+        var cid = $("#cid").val();
+        var tags = [];
+        $('input[name="tag"]:checked').each(function(){
+            tags.push($(this).val());//向数组中添加元素
+        });
+        var text = testEditor.getMarkdown();
+
+        if (title == ""){
+            alert("标题不能为空！");
+            return false;
+        }
+        if (text == ""){
+            alert("文章不能为空！");
+            return false;
+        }
+
+        $.post(
+            "/admin/article/updateArticle",
+            {
+                "aid":aid,
+                "title":title,
+                "text" :text,
+                "state":state,
+                "classify.cid"  :cid,
+                "tags" :tags.toString()
+            },
+            function (data) {
+                if (data == true){
+                    window.location.href = "/admin/article/gotoArticleManage";
+                } else if (data == false){
+                    alert("操作失败");
+                }
+            },
+            "json"
+        );
+    }
+
+</script>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zh.mapper.UserMapper">
+    
+    <resultMap id="UserMap" type="UserBase">
+        <result property="uid" column="uid"/>
+        <result property="userNo" column="userNo"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="userPostbox" column="userPostbox"/>
+        <result property="headSculpture" column="headSculpture"/>
+        <result property="source" column="source"/>
+        <association property="role" javaType="Role">
+            <result property="rid" column="rid"/>
+            <result property="rname" column="rname"/>
+            <result property="introduction" column="introduction"/>
+        </association>
+    </resultMap>    
+
+    <select id="login" parameterType="String" resultMap="UserMap">
+        select * from blog.userbase
+        where userNo = #{userNo} and password = #{password}
+    </select>
+
+    <select id="getUserLoginInfo" parameterType="String" resultMap="UserMap">
+        select * from blog.userbase u,blog.role r
+        where u.rid = r.rid and u.userNo = #{userNo}
+    </select>
+
+</mapper>

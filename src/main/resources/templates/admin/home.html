@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no">
+    <title>pha-Admin</title>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/bootstrap-maizi.css}"/>
+    <link rel="stylesheet" th:href="@{/adminStatic/css/content-style.css}"/>
+</head>
+<body>
+
+<!-- 导航 调用模块-->
+<div th:replace="~{admin/commons::head(active='home')}"></div>
+<!-- 主体 -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3>系统信息</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">数据统计</div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">用户数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.userNumber}"></span></li>
+                                    <li class="list-group-item">文章数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.articleNumber}"></span></li>
+                                    <li class="list-group-item">评论数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.discussNumber}"></span></li>
+                                    <li class="list-group-item">分类数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.classifyNumber}"></span></li>
+                                    <li class="list-group-item">标签数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.tagNumber}"></span></li>
+                                    <li class="list-group-item">美图数：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;<span th:text="${count.bingImageNumber}"></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">版本信息</div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">服务器地址：&emsp;<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;120.55.45.177</li>
+                                    <li class="list-group-item">运行环境：&emsp;&emsp;<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;Tomcat 9.0</li>
+                                    <li class="list-group-item">Java版本：&emsp;&emsp;<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;1.8.0</li>
+                                    <li class="list-group-item">MySql版本：&emsp;<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;5.7.2</li>
+                                    <li class="list-group-item">富文本编辑器：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;Editor.md</li>
+                                    <li class="list-group-item">MySql版本：<span class="glyphicon glyphicon-triangle-right"></span>&nbsp;&nbsp;5.7.2</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体 -->
+
+<!--页脚-->
+<div th:replace="~{admin/commons::footer}"></div>
+
+
+</body>
+<script th:src="@{/adminStatic/js/jquery.js}"></script>
+<script th:src="@{/adminStatic/js/bootstrap.min.js}"></script>
+</html>

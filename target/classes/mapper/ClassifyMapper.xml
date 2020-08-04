@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zh.mapper.ClassifyMapper">
+
+    <select id="findAll" resultType="Classify">
+        select * from blog.classify
+    </select>
+
+    <insert id="addClassify" parameterType="Classify">
+        insert into blog.classify (cname) values (#{cname});
+    </insert>
+
+    <update id="updateClassify" parameterType="Classify">
+        update blog.classify set cname = #{cname} where cid = #{cid};
+    </update>
+
+    <delete id="deleteClassify" parameterType="int">
+        delete from blog.classify where cid = #{cid}
+    </delete>
+</mapper>

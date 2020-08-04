@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zh.mapper.StatisticsMapper">
+
+    <select id="count" resultType="Statistics">
+        select * from
+        (select count(uid) 'userNumber' from userbase) t1,
+        (select count(aid) 'ArticleNumber' from article) t2,
+        (select count(cid) 'classifyNumber' from classify) t3,
+        (select count(did) 'discussNumber' from discuss) t4,
+        (select count(tid) 'tagNumber' from tag) t5,
+        (select count(bid) 'bingImageNumber' from bingimage) t6
+
+    </select>
+
+
+</mapper>

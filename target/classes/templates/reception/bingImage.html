@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- libs css-->
+    <link rel="stylesheet" th:href="@{/reception/css/tool.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/style.css}">
+    <link rel="stylesheet" th:href="@{/reception/css/media.css}">
+</head>
+<body>
+
+<!-- 导航 调用模块-->
+<div th:replace="~{reception/commons::head(data='bingImage')}"></div>
+
+<t></t>
+<!-- 内容 -->
+<div class="content container">
+    <!-- 文章 -->
+    <div class="love2">
+        <div class="left">
+            <div id="image">
+
+            </div>
+            <div class="panel-footer col-md-12" id="paginatorDiv" style="text-align: center">
+                <!--分页控件-->
+                <ul id="paginator"></ul>
+            </div>
+        </div>
+        <!-- 侧边 调用模块-->
+        <div th:replace="~{reception/commons::side(data='bingImage')}"></div>
+    </div>
+</div>
+
+<!-- 页脚 调用模块-->
+<div th:replace="~{reception/commons::footer}"></div>
+<!-- 回顶 调用模块-->
+<div th:replace="~{reception/commons::gotoTop}"></div>
+
+</body>
+<script th:src="@{/reception/js/jquery-3.4.1.js}"></script>
+<script th:src="@{/reception/js/bootstrap.js}"></script>
+<script th:src="@{/reception/js/bootstrap-paginator.js}"></script>
+<script th:src="@{/reception/js/style.js}"></script>
+<script th:src="@{/reception/js/base.js}"></script>
+
+<script>
+
+    $.post(
+        "/bingImage/findAll",
+        {
+            "pageNum":1,
+        },
+        function (data) {
+            dataRenderingImage(data.list);
+            initPagination(data.pageNum,data.pages,"bingImage",0);
+        },
+        "json"
+    );
+
+
+</script>
+</html>
